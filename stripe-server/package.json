@@ -1,0 +1,14 @@
+{
+    "name": "stripe-server",
+    "version": "1.0.0",
+    "type": "module",
+    "description": "Stripe Checkout server",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js"
+    },
+    "dependencies": {
+        "stripe": "^14.8.0",
+        "express": "^4.18.2"
+    }
+}
