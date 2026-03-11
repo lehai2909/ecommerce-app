@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useCart } from "../context/CartContext";
 import "./Product.css";
 
 function Product({ product }) {
+  const { addItem } = useCart();
   const [imageError, setImageError] = useState(false);
 
   const handleImageError = () => {
@@ -21,7 +23,7 @@ function Product({ product }) {
         <h3>{product.name}</h3>
         <p className="product-description">{product.description}</p>
         <p className="product-price">${product.price.toFixed(2)}</p>
-        <button className="add-to-cart-button">Add to Cart</button>
+        <button className="add-to-cart-button" onClick={() => addItem(product)}>Add to Cart</button>
       </div>
     </div>
   );

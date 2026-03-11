@@ -14,6 +14,8 @@ function Login() {
       // Store login state (in a real app, use proper auth state management)
       localStorage.setItem("isLoggedIn", "true");
       localStorage.setItem("userEmail", email);
+      // Trigger cart reload for the specific user
+      window.dispatchEvent(new Event("user_auth_change"));
       navigate("/products");
     } else {
       alert("Please enter both email and password");

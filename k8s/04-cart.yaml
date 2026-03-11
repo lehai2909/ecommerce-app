@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart-service
+  namespace: ecommerce
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cart-service
+  template:
+    metadata:
+      labels:
+        app: cart-service
+    spec:
+      imagePullSecrets:
+      - name: acr-secret
+      containers:
+      - name: api
+        image: haiwebappregistry.azurecr.io/ecommerce-cart-service:v1
+        ports:
+        - containerPort: 80
+      - name: redis
+        image: redis:alpine
+        ports:
+        - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart-service
+  namespace: ecommerce
+spec:
+  selector:
+    app: cart-service
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+  - name: redis
+    port: 6379
+    targetPort: 6379

@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-catalog
+  namespace: ecommerce
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-catalog
+  template:
+    metadata:
+      labels:
+        app: product-catalog
+    spec:
+      imagePullSecrets:
+      - name: acr-secret
+      containers:
+      - name: api
+        image: haiwebappregistry.azurecr.io/ecommerce-product-catalog:v1
+        ports:
+        - containerPort: 80
+      - name: mysql
+        image: mysql:8.0
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "secretpassword"
+        - name: MYSQL_DATABASE
+          value: "products"
+        ports:
+        - containerPort: 3306
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-catalog
+  namespace: ecommerce
+spec:
+  selector:
+    app: product-catalog
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+  - name: mysql
+    port: 3306
+    targetPort: 3306

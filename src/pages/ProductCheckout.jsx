@@ -2,79 +2,105 @@ import React, { useState, useEffect } from "react";
 import Header from "../components/Header";
 import "./ProductCheckout.css";
 
-const PRODUCT = {
-  id: 1,
-  name: "Stubborn Attachments",
-  price: 20.0,
-  image: "https://i.imgur.com/EHyR2nP.png",
-  description: "A thoughtful exploration of values and meaning",
-};
+import { useNavigate } from "react-router-dom";
+import { useCart } from "../context/CartContext";
 
-const ProductDisplay = () => (
-  <div className="checkout-page">
-    <Header showBackButton={true} />
-    <div className="checkout-container">
-      <div className="checkout-content">
-        <h1>Order Summary</h1>
-        
-        <div className="order-items">
-          <div className="order-item">
-            <img
-              src={PRODUCT.image}
-              alt={PRODUCT.name}
-              className="item-image"
-            />
-            <div className="item-details">
-              <h3>{PRODUCT.name}</h3>
-              <p className="item-description">{PRODUCT.description}</p>
-              <div className="quantity-section">
-                <span className="label">Quantity:</span>
-                <span className="quantity">1</span>
+const ProductDisplay = () => {
+  const { items, totalAmount } = useCart();
+  const navigate = useNavigate();
+
+  const handleCheckout = async () => {
+    try {
+      const response = await fetch("/api/checkout/create-checkout-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ items }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const session = await response.json();
+      // Redirect to Stripe Checkout page
+      window.location.href = session.url;
+    } catch (error) {
+      console.error("Error creating checkout session:", error);
+      alert("Failed to initiate checkout. Please try again.");
+    }
+  };
+
+  const tax = totalAmount * 0.08;
+  const grandTotal = totalAmount + tax;
+
+  return (
+    <div className="checkout-page">
+      <Header showBackButton={true} />
+      <div className="checkout-container">
+        <div className="checkout-content">
+          <h1>Order Summary</h1>
+          
+          <div className="order-items">
+            {items.map((item) => (
+              <div key={item.id} className="order-item">
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="item-image"
+                />
+                <div className="item-details">
+                  <h3>{item.name}</h3>
+                  <div className="quantity-section">
+                    <span className="label">Quantity:</span>
+                    <span className="quantity">{item.quantity}</span>
+                  </div>
+                </div>
+                <div className="item-price">
+                  ${(item.price * item.quantity).toFixed(2)}
+                </div>
               </div>
-            </div>
-            <div className="item-price">
-              ${PRODUCT.price.toFixed(2)}
-            </div>
+            ))}
+            {items.length === 0 && <p>Your cart is empty.</p>}
           </div>
-        </div>
 
-        <div className="order-summary">
-          <div className="summary-row">
-            <span>Subtotal</span>
-            <span>${PRODUCT.price.toFixed(2)}</span>
-          </div>
-          <div className="summary-row">
-            <span>Shipping</span>
-            <span>Free</span>
-          </div>
-          <div className="summary-row">
-            <span>Tax</span>
-            <span>${(PRODUCT.price * 0.08).toFixed(2)}</span>
-          </div>
-          <div className="summary-divider"></div>
-          <div className="summary-row total">
-            <span>Total</span>
-            <span>${(PRODUCT.price * 1.08).toFixed(2)}</span>
-          </div>
-        </div>
+          {items.length > 0 && (
+            <>
+              <div className="order-summary">
+                <div className="summary-row">
+                  <span>Subtotal</span>
+                  <span>${totalAmount.toFixed(2)}</span>
+                </div>
+                <div className="summary-row">
+                  <span>Shipping</span>
+                  <span>Free</span>
+                </div>
+                <div className="summary-row">
+                  <span>Tax (8%)</span>
+                  <span>${tax.toFixed(2)}</span>
+                </div>
+                <div className="summary-divider"></div>
+                <div className="summary-row total">
+                  <span>Total</span>
+                  <span>${grandTotal.toFixed(2)}</span>
+                </div>
+              </div>
 
-        <form
-          action="http://localhost:4242/create-checkout-session"
-          method="POST"
-          className="checkout-form"
-        >
-          <button type="submit" className="checkout-button">
-            Proceed to Payment
+              <button onClick={handleCheckout} className="checkout-button">
+                Proceed to Payment
+              </button>
+            </>
+          )}
+          
+          <button onClick={() => navigate("/cart")} className="continue-shopping">
+            Back to Cart
           </button>
-        </form>
-        
-        <button className="continue-shopping">
-          Continue Shopping
-        </button>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const Message = ({ message }) => (
   <div className="checkout-page">

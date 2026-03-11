@@ -1,0 +1,34 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt
+  namespace: ecommerce
+
+spec:
+  acme:
+    email: leensea96@gmail.com # replace with your email
+    server: https://acme-v02.api.letsencrypt.org/directory # Replace with the production server in production
+    privateKeySecretRef:
+      name: letsencrypt-account-key
+    solvers:
+      - http01:
+          gatewayHTTPRoute:
+            parentRefs:
+              - name: ecommerce-gateway   
+                kind: Gateway
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ecommerce-cert
+  namespace: ecommerce
+
+spec:
+  secretName: ecommerce-tls-le        # Name of secret where the generated certificate will be stored.
+  dnsNames:
+    - "ms.static.volcanly.work" # Replace a real domain
+  issuerRef:
+    name: letsencrypt
+    kind: Issuer
+
+---

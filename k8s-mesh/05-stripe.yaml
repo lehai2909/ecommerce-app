@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stripe-server
+  namespace: ecommerce-mesh
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stripe-server
+  template:
+    metadata:
+      labels:
+        app: stripe-server
+    spec:
+      imagePullSecrets:
+      - name: acr-secret
+      containers:
+      - name: api
+        image: haiwebappregistry.azurecr.io/ecommerce-stripe-server:v2
+        ports:
+        - containerPort: 4242
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stripe-server
+  namespace: ecommerce-mesh
+spec:
+  selector:
+    app: stripe-server
+  ports:
+  - name: http
+    port: 4242
+    targetPort: 4242
