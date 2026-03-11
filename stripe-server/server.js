@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import express from "express";
 import cors from "cors";
 
+//No worry, this is sandbox Stripe key
 const stripe = new Stripe(
   "sk_test_51SvZFnE2e9uzluggOeiUDpCopJm2bdiKu0kBVR0lBoermJu1ITm50ZkGwQketwICA7dSwYl2LANkczCOytIe5j7M00VeXdOo5L",
 );
@@ -16,7 +17,7 @@ const YOUR_DOMAIN = "http://localhost:5173";
 app.post("/api/checkout/create-checkout-session", async (req, res) => {
   try {
     const { items } = req.body;
-    
+
     // Instead of full products, Stripe expects a price_data object
     const line_items = items.map((item) => {
       return {
