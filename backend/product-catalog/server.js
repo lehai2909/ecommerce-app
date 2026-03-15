@@ -1,14 +1,14 @@
 import express from 'express';
 import mysql from 'mysql2/promise';
+import cors from 'cors';
 
 const app = express();
-const port = process.env.PORT || 80;
+app.use(cors());
+const port = process.env.PORT || 8080;
 
 app.use(express.json());
 
 // Database configuration
-// Note: In k8s, this container runs in the same pod as the 'mysql' container
-// so they share 'localhost' (127.0.0.1) network.
 const dbConfig = {
   host: process.env.DB_HOST || '127.0.0.1',
   user: process.env.DB_USER || 'root',
@@ -56,24 +56,32 @@ const productsData = [
 
 // Initialize database
 async function initDb() {
+  let connected = false;
+  while (!connected) {
+    try {
+      console.log("Attempting to connect to MySQL at " + dbConfig.host + "...");
+      
+      const setupConnection = await mysql.createConnection({
+        host: dbConfig.host,
+        user: dbConfig.user,
+        password: dbConfig.password,
+        connectTimeout: 5000
+      });
+      
+      await setupConnection.query(`CREATE DATABASE IF NOT EXISTS \`${dbConfig.database}\`;`);
+      await setupConnection.end();
+
+      pool = mysql.createPool(dbConfig);
+      await pool.query('SELECT 1'); // Test connection
+      console.log('Connected to MySQL database');
+      connected = true;
+    } catch (err) {
+      console.log('Database not ready yet, retrying in 5 seconds... (' + err.message + ')');
+      await new Promise(resolve => setTimeout(resolve, 5000));
+    }
+  }
+
   try {
-    // Wait a bit for MySQL to start
-    console.log("Waiting for MySQL to be ready...");
-    await new Promise(resolve => setTimeout(resolve, 10000));
-    
-    // First connect without database selected to create it if it doesn't exist
-    const setupConnection = await mysql.createConnection({
-      host: dbConfig.host,
-      user: dbConfig.user,
-      password: dbConfig.password
-    });
-    
-    await setupConnection.query(`CREATE DATABASE IF NOT EXISTS \`${dbConfig.database}\`;`);
-    await setupConnection.end();
-
-    pool = mysql.createPool(dbConfig);
-    console.log('Connected to MySQL database');
-
     const createTableQuery = `
       CREATE TABLE IF NOT EXISTS products (
         id INT PRIMARY KEY,
@@ -111,6 +119,10 @@ async function initDb() {
 // Routes
 app.get('/api/products', async (req, res) => {
   try {
+    if (!pool) {
+      console.log('Serving products from hardcoded data (database still initializing)...');
+      return res.json(productsData);
+    }
     const [rows] = await pool.query('SELECT * FROM products');
     // Convert decimal columns from string to numbers for consistent JSON
     const products = rows.map(p => ({
@@ -127,6 +139,12 @@ app.get('/api/products', async (req, res) => {
 
 app.get('/api/products/:id', async (req, res) => {
   try {
+    if (!pool) {
+      console.log('Serving product detail from hardcoded data (database still initializing)...');
+      const product = productsData.find(p => p.id === parseInt(req.params.id));
+      if (!product) return res.status(404).json({ error: 'Product not found' });
+      return res.json(product);
+    }
     const [rows] = await pool.query('SELECT * FROM products WHERE id = ?', [req.params.id]);
     if (rows.length === 0) {
       return res.status(404).json({ error: 'Product not found' });

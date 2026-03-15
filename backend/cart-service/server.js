@@ -1,8 +1,10 @@
 import express from 'express';
 import { createClient } from 'redis';
+import cors from 'cors';
 
 const app = express();
-const port = process.env.PORT || 80;
+app.use(cors());
+const port = process.env.PORT || 8080;
 
 app.use(express.json());
 
@@ -18,12 +20,17 @@ const client = createClient({
 client.on('error', err => console.error('Redis Client Error', err));
 
 async function initRedis() {
-  try {
-    await client.connect();
-    console.log('Connected to Redis at ' + redisHost + ':' + redisPort);
-  } catch (err) {
-    console.error('Failed to connect to Redis', err);
-    process.exit(1);
+  let connected = false;
+  while (!connected) {
+    try {
+      console.log("Attempting to connect to Redis at " + redisHost + "...");
+      await client.connect();
+      console.log('Connected to Redis at ' + redisHost + ':' + redisPort);
+      connected = true;
+    } catch (err) {
+      console.log('Redis not ready, retrying in 2 seconds... (' + err.message + ')');
+      await new Promise(resolve => setTimeout(resolve, 2000));
+    }
   }
 }
 
@@ -34,6 +41,9 @@ async function initRedis() {
 app.get('/api/cart', async (req, res) => {
   const email = req.query.email || 'guest';
   try {
+    if (!client.isOpen) {
+        return res.status(503).json({ error: 'Cart service initializing' });
+    }
     const data = await client.get(`cart:${email}`);
     if (data) {
       res.json(JSON.parse(data));

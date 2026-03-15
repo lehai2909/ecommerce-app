@@ -11,7 +11,8 @@ const ProductDisplay = () => {
 
   const handleCheckout = async () => {
     try {
-      const response = await fetch("/api/checkout/create-checkout-session", {
+      const baseUrl = import.meta.env.VITE_STRIPE_SERVER_URL || "";
+      const response = await fetch(`${baseUrl}/api/checkout/create-checkout-session`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

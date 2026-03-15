@@ -1,0 +1,23 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: ecommerce-cart-service
+  labels:
+    cloud.googleapis.com/location: asia-southeast1
+spec:
+  template:
+    spec:
+      containers:
+      - name: app
+        image: asia-southeast1-docker.pkg.dev/heroic-night-453607-n0/ecommerce/cart-service:cloud-run-v5
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: "1"
+            memory: 512Mi
+        env:
+        - name: REDIS_HOST
+          value: "127.0.0.1"
+      - name: redis
+        image: redis:alpine

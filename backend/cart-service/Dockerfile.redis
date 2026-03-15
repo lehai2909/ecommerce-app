@@ -1,0 +1,11 @@
+FROM redis:alpine
+# Add netcat for health check
+RUN apk add --no-cache bash netcat-openbsd
+COPY <<EOF /healthcheck.sh
+#!/bin/bash
+while true; do
+  { echo -e "HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\nOK"; } | nc -l -p \$PORT
+done
+EOF
+RUN chmod +x /healthcheck.sh
+ENTRYPOINT ["bash", "-c", "/healthcheck.sh & redis-server"]

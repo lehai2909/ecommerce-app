@@ -83,7 +83,8 @@ export const CartProvider = ({ children }) => {
     // Avoid saving the initial blank state before it's loaded
     if (cartState === initialState && cartState.items.length === 0) return;
     
-    fetch("/api/cart", {
+    const baseUrl = import.meta.env.VITE_CART_SERVICE_URL || "";
+    fetch(`${baseUrl}/api/cart`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: userEmail, cart: cartState })
@@ -93,7 +94,8 @@ export const CartProvider = ({ children }) => {
   // Load cart from API
   const loadCartFromAPI = () => {
     const userEmail = localStorage.getItem("userEmail") || "guest";
-    fetch(`/api/cart?email=${userEmail}`)
+    const baseUrl = import.meta.env.VITE_CART_SERVICE_URL || "";
+    fetch(`${baseUrl}/api/cart?email=${userEmail}`)
       .then(res => res.json())
       .then(data => {
         dispatchCartAction({ type: "RELOAD_CART", payload: data });

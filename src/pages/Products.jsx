@@ -13,7 +13,8 @@ function Products() {
 
   useEffect(() => {
     setLoading(true);
-    fetch("/api/products")
+    const baseUrl = import.meta.env.VITE_PRODUCT_CATALOG_URL || "";
+    fetch(`${baseUrl}/api/products`)
       .then((res) => res.json())
       .then((data) => {
         if (searchQuery) {

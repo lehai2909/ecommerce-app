@@ -1,4 +1,13 @@
 FROM node:18-alpine AS build
+
+ARG VITE_PRODUCT_CATALOG_URL
+ARG VITE_CART_SERVICE_URL
+ARG VITE_STRIPE_SERVER_URL
+
+ENV VITE_PRODUCT_CATALOG_URL=$VITE_PRODUCT_CATALOG_URL
+ENV VITE_CART_SERVICE_URL=$VITE_CART_SERVICE_URL
+ENV VITE_STRIPE_SERVER_URL=$VITE_STRIPE_SERVER_URL
+
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
@@ -11,7 +20,7 @@ COPY --from=build /app/dist /usr/share/nginx/html
 # Actually Gateway API routes /api to the backends, so React just needs to serve static. 
 # But for client routing a custom nginx.conf is good to fallback to index.html
 RUN echo "server { \
-    listen 80; \
+    listen 8080; \
     location / { \
         root /usr/share/nginx/html; \
         index index.html index.htm; \
@@ -19,5 +28,5 @@ RUN echo "server { \
     } \
 }" > /etc/nginx/conf.d/default.conf
 
-EXPOSE 80
+EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]

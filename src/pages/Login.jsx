@@ -4,21 +4,17 @@ import "./Login.css";
 
 function Login() {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simple validation - in a real app, this would authenticate with a backend
-    if (email && password) {
-      // Store login state (in a real app, use proper auth state management)
+    if (email) {
       localStorage.setItem("isLoggedIn", "true");
       localStorage.setItem("userEmail", email);
-      // Trigger cart reload for the specific user
       window.dispatchEvent(new Event("user_auth_change"));
       navigate("/products");
     } else {
-      alert("Please enter both email and password");
+      alert("Please enter your email");
     }
   };
 
@@ -36,17 +32,6 @@ function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
               required
             />
           </div>
