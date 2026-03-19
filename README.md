@@ -26,3 +26,4 @@ Here is a brief look at the main parts of the app:
 ## Notes
 - Login is just a demo and does not require a real account.
 - Payments use a test mode in Stripe, so no real money is charged.
+- If it's the first time you login, there might be a situation where the database service needs to warm-up and activate (as I set up the auto-scaling for it), before it can server traffic. So if you don't see any products after login, please wait for a few minutes and try again, or open a new tab.
