@@ -1,0 +1,62 @@
+.home-container {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #fdfcfb 0%, #e2d1c3 100%);
+  background-attachment: fixed;
+}
+
+.home-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 80px 20px;
+  text-align: center;
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.home-content h1 {
+  font-size: 4rem;
+  font-weight: 900;
+  color: #111827;
+  margin-bottom: 20px;
+  letter-spacing: -2px;
+  line-height: 1.1;
+}
+
+.hero-video {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(20px);
+  padding: 40px;
+  border-radius: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  margin: 40px 0;
+}
+
+.hero-video h2 {
+  margin-bottom: 30px;
+  color: #374151;
+  font-size: 1.5rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.home-actions p {
+  font-size: 1.5rem;
+  color: #4b5563;
+  margin-top: 30px;
+  font-weight: 300;
+}
+
+@media (max-width: 768px) {
+  .home-content h1 {
+    font-size: 2.5rem;
+  }
+  .hero-video {
+    padding: 20px;
+  }
+}
