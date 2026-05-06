@@ -1,0 +1,23 @@
+[
+  {
+    "id": "cosmetic-1",
+    "name": "Radiant Glow Serum",
+    "description": "A lightweight serum that deeply hydrates and brightens your skin for a healthy, dewy finish.",
+    "price": 25.00,
+    "image": "/images/cosmetic-1.webp"
+  },
+  {
+    "id": "cosmetic-2",
+    "name": "Deep Hydration Cream",
+    "description": "Rich and nourishing cream designed to lock in moisture and restore your skin's natural barrier.",
+    "price": 30.00,
+    "image": "/images/cosmetic-2.webp"
+  },
+  {
+    "id": "cosmetic-3",
+    "name": "Gentle Purifying Cleanser",
+    "description": "Effortlessly removes impurities and makeup while leaving your skin feeling fresh and soft.",
+    "price": 20.00,
+    "image": "/images/cosmetic-3.webp"
+  }
+]

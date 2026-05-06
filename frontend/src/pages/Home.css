@@ -26,23 +26,77 @@
   line-height: 1.1;
 }
 
-.hero-video {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(20px);
-  padding: 40px;
-  border-radius: 32px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+.cosmetics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
   margin: 40px 0;
 }
 
-.hero-video h2 {
-  margin-bottom: 30px;
-  color: #374151;
+.cosmetic-card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  padding: 30px;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.cosmetic-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+}
+
+.cosmetic-card img {
+  width: 100%;
+  max-width: 250px;
+  height: auto;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  object-fit: cover;
+}
+
+.cosmetic-card h3 {
+  color: #1f2937;
   font-size: 1.5rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 2px;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.cosmetic-card p {
+  color: #6b7280;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  flex-grow: 1;
+}
+
+.cosmetic-card .price {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #0ea5e9;
+  margin: 15px 0;
+}
+
+.add-to-cart-btn {
+  background-color: #0ea5e9;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+}
+
+.add-to-cart-btn:hover {
+  background-color: #0284c7;
 }
 
 .home-actions p {
@@ -56,7 +110,7 @@
   .home-content h1 {
     font-size: 2.5rem;
   }
-  .hero-video {
-    padding: 20px;
+  .cosmetics-grid {
+    grid-template-columns: 1fr;
   }
 }

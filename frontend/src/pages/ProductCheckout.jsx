@@ -1,37 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Header from "../components/Header";
-import { authenticatedFetch } from "../utils/api";
 import "./ProductCheckout.css";
 
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 
-const ProductDisplay = () => {
+export default function ProductCheckout() {
   const { items, totalAmount } = useCart();
   const navigate = useNavigate();
 
+  const [mobilePhone, setMobilePhone] = useState("");
+  const [userNote, setUserNote] = useState("");
+
   const handleCheckout = async () => {
-    try {
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
-      const response = await authenticatedFetch(`${API_BASE_URL}/api/checkout/create-checkout-session`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ items }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const session = await response.json();
-      // Redirect to Stripe Checkout page
-      window.location.href = session.url;
-    } catch (error) {
-      console.error("Error creating checkout session:", error);
-      alert("Failed to initiate checkout. Please try again.");
-    }
+    console.log("Checkout Details:");
+    console.log("Mobile Phone:", mobilePhone);
+    console.log("User Note:", userNote);
+    console.log("Items:", items);
+    alert("Order submitted! Check console for details.");
   };
 
   const tax = totalAmount * 0.08;
@@ -88,9 +74,32 @@ const ProductDisplay = () => {
                   <span>${grandTotal.toFixed(2)}</span>
                 </div>
               </div>
+              <div className="checkout-form" style={{ marginTop: '20px', marginBottom: '20px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
+                  <label htmlFor="mobilePhone" style={{ fontWeight: 'bold', marginBottom: '5px' }}>Mobile Phone</label>
+                  <input 
+                    type="text" 
+                    id="mobilePhone" 
+                    value={mobilePhone} 
+                    onChange={(e) => setMobilePhone(e.target.value)} 
+                    placeholder="Enter your mobile phone"
+                    style={{ padding: '10px', borderRadius: '8px', border: '1px solid #ccc', fontSize: '1rem' }}
+                  />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
+                  <label htmlFor="userNote" style={{ fontWeight: 'bold', marginBottom: '5px' }}>User Note</label>
+                  <textarea 
+                    id="userNote" 
+                    value={userNote} 
+                    onChange={(e) => setUserNote(e.target.value)} 
+                    placeholder="Any special requests or delivery notes?"
+                    style={{ padding: '10px', borderRadius: '8px', border: '1px solid #ccc', minHeight: '80px', fontSize: '1rem' }}
+                  />
+                </div>
+              </div>
 
               <button onClick={handleCheckout} className="checkout-button">
-                Proceed to Payment
+                Submit Order
               </button>
             </>
           )}
@@ -102,38 +111,4 @@ const ProductDisplay = () => {
       </div>
     </div>
   );
-};
-
-const Message = ({ message }) => (
-  <div className="checkout-page">
-    <Header showBackButton={true} />
-    <div className="checkout-container">
-      <div className="checkout-content">
-        <div className="message-box">
-          <p className="message-text">{message}</p>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-export default function ProductCheckout() {
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    // Check to see if this is a redirect back from Checkout
-    const query = new URLSearchParams(window.location.search);
-
-    if (query.get("success")) {
-      setMessage("✓ Order placed! You will receive an email confirmation.");
-    }
-
-    if (query.get("canceled")) {
-      setMessage(
-        "Order canceled -- continue to shop around and checkout when you're ready.",
-      );
-    }
-  }, []);
-
-  return message ? <Message message={message} /> : <ProductDisplay />;
 }

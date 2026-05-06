@@ -21,7 +21,7 @@ function Cart() {
         {!hasItems && (
           <div className="empty-cart">
             <p>Your cart is empty.</p>
-            <button onClick={() => navigate("/products")} className="continue-shopping">
+            <button onClick={() => navigate("/")} className="continue-shopping">
               Continue Shopping
             </button>
           </div>
