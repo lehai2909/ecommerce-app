@@ -16,14 +16,8 @@ terraform {
 }
 
 provider "aws" {
-  region  = "us-west-1"
-  profile = "digital-unicorn"
-}
-
-provider "aws" {
-  alias   = "ap_southeast_1"
   region  = "ap-southeast-1"
-  profile = "digital-unicorn"
+  profile = "staging"
 }
 
 data "aws_caller_identity" "current" {}
