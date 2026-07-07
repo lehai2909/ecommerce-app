@@ -8,8 +8,8 @@ import App from './App.jsx'
 Amplify.configure({
   Auth: {
     Cognito: {
-      userPoolId: 'us-west-1_M6NrbiSYy',
-      userPoolClientId: '4t2jjoo7k6mb8fnk5bn8ji6fa2',
+      userPoolId: 'ap-southeast-1_VIh5EQ280',
+      userPoolClientId: '5smamc2ml8tj8k88mgdkm2j169',
     }
   }
 });

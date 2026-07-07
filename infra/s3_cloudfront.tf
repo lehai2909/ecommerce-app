@@ -44,38 +44,9 @@ resource "aws_s3_bucket_policy" "frontend" {
   policy = data.aws_iam_policy_document.s3_policy.json
 }
 
-# data "aws_s3_bucket" "static" {
-#   bucket = "hai-static-bucket"
-# }
 
-resource "aws_cloudfront_origin_access_control" "static" {
-  name                              = "hai-static-bucket"
-  origin_access_control_origin_type = "s3"
-  signing_behavior                  = "always"
-  signing_protocol                  = "sigv4"
-}
 
-data "aws_iam_policy_document" "static_s3_policy" {
-  statement {
-    actions   = ["s3:GetObject"]
-    resources = ["arn:aws:s3:::hai-static-bucket/*"]
-    principals {
-      type        = "Service"
-      identifiers = ["cloudfront.amazonaws.com"]
-    }
-    condition {
-      test     = "StringEquals"
-      variable = "AWS:SourceArn"
-      values   = [aws_cloudfront_distribution.frontend.arn]
-    }
-  }
-}
 
-resource "aws_s3_bucket_policy" "static" {
-  provider = aws.ap_southeast_1
-  bucket   = "hai-static-bucket"
-  policy   = data.aws_iam_policy_document.static_s3_policy.json
-}
 
 resource "aws_cloudfront_distribution" "frontend" {
   origin {
@@ -84,11 +55,7 @@ resource "aws_cloudfront_distribution" "frontend" {
     origin_id                = "S3Frontend"
   }
 
-  origin {
-    domain_name              = "hai-static-bucket.s3.ap-southeast-1.amazonaws.com"
-    origin_access_control_id = aws_cloudfront_origin_access_control.static.id
-    origin_id                = "S3Static"
-  }
+
 
   enabled             = true
   is_ipv6_enabled     = true
@@ -112,25 +79,7 @@ resource "aws_cloudfront_distribution" "frontend" {
     max_ttl                = 84600
   }
 
-  ordered_cache_behavior {
-    path_pattern     = "/video/*"
-    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
-    cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "S3Static"
 
-    forwarded_values {
-      query_string = false
-      headers      = ["Origin", "Access-Control-Request-Headers", "Access-Control-Request-Method"]
-      cookies {
-        forward = "none"
-      }
-    }
-
-    viewer_protocol_policy = "redirect-to-https"
-    min_ttl                = 0
-    default_ttl            = 3600
-    max_ttl                = 84600
-  }
 
   custom_error_response {
     error_code            = 403
